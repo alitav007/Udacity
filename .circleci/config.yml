@@ -23,6 +23,6 @@ workflows:
     jobs:
       - welcome/run
       - Print_Hello
-      - Print_World
+      - Print_World: 
            requires:
             - Print_Hello
