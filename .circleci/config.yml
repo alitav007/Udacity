@@ -6,28 +6,36 @@ orbs:
   welcome: circleci/welcome-orb@0.4.1
 # Orchestrate or schedule a set of jobs
 jobs: 
-  Print_Hello:
+  build:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: echo ''hello-Alitav'' > ~/output.txt
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - output.txt
-  Print_output_file:
+      - checkout
+      - run: npm i
+      - run: npm run lint
+  test:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/output.txt     
+      - checkout
+      - run: npm i
+      - run: npm run test
+  analyze:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm audit    
 workflows:
   # Name the workflow "welcome3"
-  welcome:
+  welcome1:
     # Run the welcome/run job in its own container
     jobs:
-      - Print_Hello 
-      - Print_output_file: 
-           requires:
-            - Print_Hello
+      - build
+      - test:
+          requires:
+            - build
+      - analyze:
+          requires:
+            - test 
+      
